@@ -1,4 +1,4 @@
-name: Run Python Script
+name: Deploy Python App to Azure
 
 on:
   push:
@@ -6,8 +6,8 @@ on:
       - main  # 當 main 分支有推送時觸發
 
 jobs:
-  run-python:
-    runs-on: ubuntu-latest  # 使用最新的 Ubuntu 環境
+  build-and-deploy:
+    runs-on: ubuntu-latest
 
     steps:
       # 1. 檢出程式碼
@@ -18,7 +18,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'  # 指定 Python 版本（可根據需求更改）
+          python-version: '3.9'
 
       # 3. 安裝依賴套件
       - name: Install dependencies
@@ -26,7 +26,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # 4. 執行 Python 腳本
-      - name: Run Python script
-        run: |
-          python src/main.py
+      # 4. 部署到 Azure
+      - name: Deploy to Azure
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: <你的 Azure App Service 名稱>  # 替換為你的 App Service 名稱
+          slot-name: production
+          publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
